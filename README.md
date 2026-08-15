@@ -45,3 +45,26 @@ from ranking
 where ranking < 4
 group by c_region, Gender;
 ```
+
+```sql
+-- The founder of Maven Analytics is named Chris. Find the state with the highest percent of babies named "Chris".
+select * from names;
+select * from regions;
+
+with total_births as (select State,
+					  sum(Births) as total_births
+					  from names 
+					  group by State),
+                      
+total_births_chris as (select State,
+						sum(Births) as total_births_chris
+						from names
+						where Name = 'Chris'
+						group by State)
+
+select tb.State, tb.total_births, tbc.total_births_chris,
+	   cast(tbc.total_births_chris as decimal(18,8))  / tb.total_births * 100 as prt_chris
+from total_births tb inner join total_births_chris tbc
+	on tb.State = tbc.State
+order by prt_chris asc;
+```
